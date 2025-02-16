@@ -4,6 +4,7 @@ import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from .api.routes import init_routes, api_bp
+from .api.UserApi import user_bp
 from .api.sockets import init_sockets
 
 # Load environment variables from .env file
@@ -31,6 +32,7 @@ def create_app():
 
     # Register routes and sockets
     app.register_blueprint(api_bp, url_prefix='/api')
+    app.register_blueprint(user_bp)
     init_routes(app)
     init_sockets(socketio)
 
