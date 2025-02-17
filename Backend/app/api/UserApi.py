@@ -3,8 +3,6 @@ from app.services.UserService import UserService
 
 user_bp = Blueprint('user', __name__, url_prefix='/users')
 
-#TODO: Fix error handling like in the delete
-
 @user_bp.route('/', methods=['GET'])
 def get_all_users():
     response = UserService.get_all_users()
