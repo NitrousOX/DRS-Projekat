@@ -1,4 +1,3 @@
-import os
 from flask import Flask
 from flask_socketio import SocketIO
 from flask_jwt_extended import JWTManager
@@ -8,7 +7,7 @@ from dotenv import load_dotenv
 from .api.UserApi import user_bp
 from .api.LoginApi import login_bp
 from .api.sockets import init_sockets
-
+from app.config import Config
 # Load environment variables from .env file
 load_dotenv()
 
@@ -18,28 +17,17 @@ socketio = SocketIO()
 def create_app():
     app = Flask(__name__)
 
+    # Load configuration from Config class
+    app.config.from_object(Config)
+
     CORS(app)
 
-    # Load configuration from config.py or .env
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
-    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'your_jwt_secret_key')
-
-    # Secure cookie settings for JWT
-    app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-    app.config['JWT_COOKIE_SECURE'] = True  # Only send cookies over HTTPS
-    app.config['JWT_COOKIE_HTTPONLY'] = True  # Prevent JavaScript access to cookies
-    app.config['JWT_COOKIE_SAMESITE'] = 'Strict'  # CSRF protection
-
-    # MongoDB connection setup
-    mongo_uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
-    app.config['MONGO_URI'] = mongo_uri
-
     # Initialize MongoDB client
-    mongo_client = MongoClient(mongo_uri)
+    mongo_client = MongoClient(app.config['MONGO_URI'])
     app.db = mongo_client['DRS']
 
     # Initialize JWT
-    jwt = JWTManager(app)
+    JWTManager(app)
 
     # Initialize SocketIO with app
     socketio.init_app(app)
