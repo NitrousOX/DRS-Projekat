@@ -87,3 +87,41 @@ class UserService:
             return ApiResponse(f"Database error: {str(e)}", StatusCodes.INTERNAL_SERVER_ERROR)
         except Exception as e:
             return ApiResponse(f"Unexpected error: {str(e)}", StatusCodes.INTERNAL_SERVER_ERROR)
+        
+    @staticmethod
+    def update_registration_status(user_id, is_registered):
+        try:
+            existing_user = UserRepository.get_user_by_id(user_id)
+            if not existing_user:
+                return ApiResponse(f"User with ID {user_id} not found.", StatusCodes.NOT_FOUND)
+
+            # Update only the 'is_registered' field
+            update_data = {"isRegistered": is_registered}
+            success = UserRepository.update_user(user_id, update_data)
+
+            if success:
+                return ApiResponse(
+                    f"User registration {'approved' if is_registered else 'declined'} successfully", 
+                    StatusCodes.SUCCESS
+                )
+            else:
+                return ApiResponse("Failed to update user.", StatusCodes.INTERNAL_SERVER_ERROR)
+
+        except PyMongoError as e:
+            return ApiResponse(f"Database error: {str(e)}", StatusCodes.INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return ApiResponse(f"Unexpected error: {str(e)}", StatusCodes.INTERNAL_SERVER_ERROR)
+
+
+    @staticmethod
+    def approve_registration(user_id):
+        return UserService.update_registration_status(user_id, True)
+    
+    
+    @staticmethod
+    def decline_registration(user_id):
+        return UserService.update_registration_status(user_id, False)
+    
+    @staticmethod
+    def first_login(user):
+        UserRepository.update_user(user['_id'], {'firstLogin': False})

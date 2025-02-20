@@ -43,7 +43,6 @@ class UserRepository:
     def update_user(user_id, updated_data):
         collection = current_app.db['Users']
         updated_data = {key: value for key, value in updated_data.items() if value is not None}
-        print(updated_data)
         result = collection.update_one({"_id": ObjectId(user_id)}, {"$set": updated_data})
         return result.modified_count > 0
 
