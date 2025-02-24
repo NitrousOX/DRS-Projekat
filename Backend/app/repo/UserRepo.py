@@ -15,6 +15,13 @@ class UserRepository:
         data_list = list(data)
         data_list = [convert_id_to_str(item) for item in data_list]
         return data_list
+    
+    def get_all_admins():
+        collection = current_app.db['Users']
+        admins = collection.find({"isAdmin": True})  # Assuming 'is_admin' is the field that indicates if a user is an admin
+        admin_list = list(admins)
+        admin_list = [convert_id_to_str(item) for item in admin_list]
+        return admin_list
 
     @staticmethod
     def get_user_by_id(user_id):
