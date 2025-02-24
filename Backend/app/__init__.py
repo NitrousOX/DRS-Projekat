@@ -2,6 +2,7 @@ from flask import Flask
 from flask_socketio import SocketIO
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from flask_mail import Mail
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from .api.UserApi import user_bp
@@ -12,7 +13,8 @@ from app.config import Config
 load_dotenv()
 
 # Initialize app and socketio
-socketio = SocketIO()
+socketio = SocketIO(cors_allowed_origins="*")
+mail = Mail()
 
 def create_app():
     app = Flask(__name__)
@@ -31,6 +33,8 @@ def create_app():
 
     # Initialize SocketIO with app
     socketio.init_app(app)
+    # Initialize Mail sending
+    mail.init_app(app)
 
     # Register routes and sockets
     app.register_blueprint(user_bp)

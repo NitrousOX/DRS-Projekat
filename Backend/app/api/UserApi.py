@@ -9,7 +9,7 @@ user_bp = Blueprint('user', __name__, url_prefix='/users')
 #GET ALL
 @user_bp.route('/', methods=['GET'])
 @jwt_required()
-@jwt_admin()
+@jwt_admin
 def get_all_users():
     response = UserService.get_all_users()
     return jsonify(response.value), response.status_code
@@ -30,7 +30,6 @@ def get_user_by_email(email):
 
 #CREATE
 @user_bp.route('/', methods=['POST'])
-@jwt_required()
 def create_user():
     data = request.json
     response = UserService.create_user(data)
@@ -47,7 +46,23 @@ def update_user(user_id):
 #DELETE
 @user_bp.route('/<user_id>', methods=['DELETE'])
 @jwt_required()
-@jwt_admin()
+@jwt_admin
 def delete_user(user_id):
     response = UserService.delete_user(user_id)
+    return jsonify(response.value), response.status_code
+
+#APPROVE REGISTRAION
+@user_bp.route('/approve/<user_id>', methods=['PUT'])
+@jwt_required()
+@jwt_admin
+def approve_user(user_id):
+    response = UserService.approve_registration(user_id=user_id)
+    return jsonify(response.value), response.status_code
+
+#REJECT REGISTRAION
+@user_bp.route('/reject/<user_id>', methods=['PUT'])
+@jwt_required()
+@jwt_admin
+def reject_user(user_id):
+    response = UserService.reject_registration(user_id=user_id)
     return jsonify(response.value), response.status_code
